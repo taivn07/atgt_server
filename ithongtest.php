@@ -1,23 +1,12 @@
 <?php
-//array for JSON response
+$responseAll = array();
 $response = array();
-//include db_connect file
+$response_violation = array();
+$response_keyword = array();
 require_once ('db_connect.php');
-
-//connect db
 $db = new DB_CONNECT();
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 //dungna
-//$db = mysqli_connect('localhost', 'root','','ithongtest40');
-//$db = mysql_connect('localhost', 'root','','ithongtest');
-    
-    // neu ket noi khong thanh cong, thi bao loi ra
-    //if(!$db) {
-     //   trigger_error("Could not connect to DB: " . mysqli_connect_error());
-   // } else {
-        // dat phuong thuc ket noi la utf-8
-        //mysqli_set_charset($db, 'utf-8');
-   // }
 
 /**
 *   Author: Dungna
@@ -30,8 +19,10 @@ if (isset($_GET['sync']) && isset($_GET['last_update'])) {
    $sql = "SELECT * FROM keywords WHERE LastUpdated > DATE_FORMAT({$last_update},'%Y-%m-%d %H:%i:%s')";
    $result = mysql_query($sql) or die(mysql_error());
    $num_rows = mysql_num_rows($result);
+   //$responseAll['keyword_all'] = array();
+   $response_keyword['Keyword'] = array();
    if($num_rows > 0){
-        $response['Keyword'] = array();
+       
          while ($row = mysql_fetch_array($result))
         {
             //temp array
@@ -42,22 +33,80 @@ if (isset($_GET['sync']) && isset($_GET['last_update'])) {
             $keyword['Sort'] = $row['Sort'];
             $keyword['LastUpdated'] = $row['LastUpdated'];
             //push data into final response array
-            array_push($response['Keyword'], $keyword);
+            array_push($response_keyword['Keyword'], $keyword);
         }
         //code
-        $response['count'] = $num_rows;
-        $response['code'] = 1;
+        $response_keyword['count'] = $num_rows;
+        $response_keyword['code'] = 1;
 
         //echo JSON
-        echo json_encode($response);
+        //push data into final response array
+        $responseAll['keyword_all'] =  $response_keyword;
+        //echo json_encode($response);
    }else{
         //no response
-        $response['message'] = "No data to update";
-        $response['count'] = $num_rows;
-        $response['code'] = 0;
-        echo json_encode($response);
-   }
+        $response_keyword['message'] = "No data to update";
+        $response_keyword['count'] = $num_rows;
+        $response_keyword['code'] = 0;
 
+        //push data into final response array
+        $responseAll['keyword_all'] =  $response_keyword;
+        //echo json_encode($response);
+   }
+   //echo json_encode($response_keyword);;
+
+   // for violation table
+    $sql = "SELECT * FROM violation WHERE LastUpdated > DATE_FORMAT({$last_update},'%Y-%m-%d %H:%i:%s')";
+    $result = mysql_query($sql) or die(mysql_error());
+    $num_rows = mysql_num_rows($result);
+    //$responseAll['violation_all'] = array();
+    $response_violation['violation'] = array();
+   if($num_rows > 0){
+        
+         while ($row = mysql_fetch_array($result))
+        {
+            //temp array
+            $Violation = array();
+            $Violation['Violation_ID'] = $row['ID'];
+            $Violation['Object'] = $row['Object'];
+            $Violation['Name'] = $row['Name'];
+            $Violation['NameEN'] = $row['NameEN'];
+            $Violation['LawID'] = $row['LawID'];
+            $Violation['Bookmark_ID'] = $row['Bookmark_ID'];
+            $Violation['IsWarning'] = $row['IsWarning'];
+            $Violation['IsPoppular'] = $row['IsPoppular'];
+            $Violation['MainContent'] = $row['MainContent'];
+            $Violation['Fines'] = $row['Fines'];
+            $Violation['Additional_Penalties'] = $row['Additional_Penalties'];
+            $Violation['Remedial_Measures'] = $row['Remedial_Measures'];
+            $Violation['Other_Penalties'] = $row['Other_Penalties'];
+            $Violation['Group_Value'] = $row['Group_Value'];
+            $Violation['Type_Value'] = $row['Type_Value'];
+            $Violation['LawTitle'] = $row['LawTitle'];
+            $Violation['Disabled'] = $row['Disabled'];
+            $Violation['LastUpdated'] = $row['LastUpdated'];
+            //push data into final response array
+            array_push($response_violation['violation'], $Violation);
+        }
+        //code
+        $response_violation['count'] = $num_rows;
+        $response_violation['code'] = 1;
+
+        //echo JSON
+        //push data into final response array
+        $responseAll['violation_all'] = $response_violation;
+        //echo json_encode($response);
+   }else{
+        //no response
+        $response_violation['message'] = "No data to update";
+        $response_violation['count'] = $num_rows;
+        $response_violation['code'] = 0;
+
+        //push data into final response array
+        $responseAll['violation_all'] = $response_violation;
+        //echo json_encode($response);
+   }
+   echo json_encode($responseAll);
 }
 
 /**
@@ -77,7 +126,7 @@ if (isset($_GET['search_online'])) {
         {
             //temp array
             $Violation = array();
-            $Violation['ID'] = $row['ID'];
+            $Violation['Violation_ID'] = $row['ID'];
             $Violation['Object'] = $row['Object'];
             $Violation['Name'] = $row['Name'];
             $Violation['NameEN'] = $row['NameEN'];

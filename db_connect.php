@@ -1,23 +1,14 @@
 <?php
-
-/**
- * A class file to connect to db
- *   
- **/
 class DB_CONNECT
 {
-
-    // Constructor
     function __construct()
     {
-        // connecting to db
         $this->connect();
     }
 
     //  destructor
     function __destruct()
     {
-        // close db connection
         $this->close();
     }
     /**
@@ -34,10 +25,6 @@ class DB_CONNECT
         return $con;
     }
 
-    /**
-     * function to close db connection
-     * 
-     **/
     function close()
     {
         mysql_close();
